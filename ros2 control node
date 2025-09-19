@@ -1,0 +1,29 @@
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+from flightgear_udp_sender import send_fg_command
+
+class FlightGearControlNode(Node):
+    def __init__(self):
+        super().__init__('flightgear_control_node')
+        self.subscription = self.create_subscription(
+            String,
+            'flightgear_command',
+            self.listener_callback,
+            10
+        )
+        self.get_logger().info("FlightGear Control Node iniciado e escutando por comandos.")
+
+    def listener_callback(self, msg):
+        self.get_logger().info(f"Comando recebido: {msg.data}")
+        send_fg_command(msg.data)
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = FlightGearControlNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
