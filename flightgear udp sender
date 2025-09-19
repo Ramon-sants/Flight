@@ -1,0 +1,16 @@
+import socket
+import yaml
+import os
+
+def load_config():
+    config_path = os.path.join(os.path.dirname(__file__), 'config', 'flightgear_udp.yaml')
+    with open(config_path, 'r') as f:
+        cfg = yaml.safe_load(f)
+    ip = cfg['flightgear'].get('ip', '127.0.0.1')
+    port = cfg['flightgear'].get('port', 5500)
+    return ip, port
+
+def send_fg_command(data: str):
+    ip, port = load_config()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(data.encode(), (ip, port))
